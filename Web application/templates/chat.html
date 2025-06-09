@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎬 Movie & TV Recommender</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+  <!--Button for toggling the theme from dark/light-->
+  <button class="toggle-theme" onclick="toggleTheme()">🌓 Change Theme</button>
+
+  <div class="chat-container">
+    <h2>🎥 Movie & TV Show Recommender</h2>
+
+    <!-- History of the conversation -->
+    {% for pair in qa_pairs %}
+      <div class="bot-message">{{ pair.question }}</div>
+      <div class="user-message">{{ pair.answer }}</div>
+    {% endfor %}
+
+
+    {% if error %}
+      <div class="bot-message error">{{ error }}</div>
+    {% endif %}
+
+
+    {% if question %}
+      <div class="bot-message">{{ question }}</div>
+      <form method="post">
+        <input type="text" name="user_input" required autofocus>
+        <button type="submit">Send</button>
+      </form>
+    {% endif %}
+
+    {% if results %}
+      <div class="bot-message">✅ Here are your recommendations:</div>
+      <ul class="results">
+        {% for item in results %}
+          <li class="recommendation">
+            <img src="{{ item.image_url }}" alt="Poster for {{ item.title }}" class="poster">
+            <div class="info">
+              <strong>{{ item.title }}</strong> (⭐ {{ item.rating_value }})<br>
+              <em>{{ item.genres }}</em><br>
+              <p>{{ item.summary }}</p>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      <form method="get" action="{{ url_for('reset') }}">
+        <button class="restart-button">🔁 Start Over</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <script>
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light');
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('light');
+      localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    }
+  </script>
+</body>
+</html>
